@@ -23,29 +23,40 @@ class setapikey(Resource):
 @nscoreapi.route('/similarity', methods = ['POST'])
 class getsimilarity(Resource):
     def post(self):
-        print(request.json.get("payload"))
-        return {'message': 'valid getsimilarity call'}
+        payload = request.json.get("payload")
+        response = paralleldots.similarity(payload)
+        response.pop("usage", None)
+        return response
 
 @nscoreapi.route('/sentiment', methods = ['POST'])
 class getsentiment(Resource):
     def post(self):
-        return {'message': 'valid getsentiment call'}
+        payload = request.json.get("payload")
+        response = paralleldots.sentiment(payload)
+        response.pop("usage", None)
+        return response
 
 @nscoreapi.route('/abusescore', methods = ['POST'])
 class getabusescore(Resource):
     def post(self):
         payload = request.json.get("payload")
         response = paralleldots.abuse(payload)
-        print(response)
-        return {'message': 'valid getsentiment call'}
+        response.pop("usage", None)
+        return response
 
 @nscoreapi.route('/emotionscore', methods = ['POST'])
 class getemotion(Resource):
     def post(self):
-        return {'message': 'valid getsentiment call'}
+        payload = request.json.get("payload")
+        response = paralleldots.emotion(payload)
+        response.pop("usage", None)
+        return response
 
 # payload will have path of image
 @nscoreapi.route('/popularityscore', methods = ['POST'])
 class getpopularity(Resource):
     def post(self):
-        return {'message': 'valid getsentiment call'}
+        payload = request.json.get("payload")
+        response = paralleldots.popularity(payload)
+        response.pop("usage", None)
+        return response

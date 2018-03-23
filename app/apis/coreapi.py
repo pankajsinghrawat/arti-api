@@ -5,6 +5,7 @@ import json
 import paralleldots
 import os
 import requests
+from business.business import downloader
 
 coreapiblueprint = Blueprint('coreapi', __name__)
 coreapi = Api(coreapiblueprint)
@@ -18,14 +19,14 @@ class apicalls(Resource):
 
 @nscoreapi.route('/apikey', methods = ['POST'])
 class setapikey(Resource):
-    @nscoreapi.doc(params={'apikey': 'api key'})
+    #@nscoreapi.doc(params={'apikey': 'api key'})
     def post(self):
         paralleldots.set_api_key( request.json.get("apikey") )
         return {'message': 'Api Key is successfully configured'}
 
 @nscoreapi.route('/similarity', methods = ['POST'])
 class getsimilarity(Resource):
-    @nscoreapi.doc(params={'text1': 'text for calculating similarity', 'text2': 'text for calculating similarity'})
+    #@nscoreapi.doc(params={'text1': 'text for calculating similarity', 'text2': 'text for calculating similarity'})
     def post(self):
         payload1 = request.json.get("text1")
         payload2 = request.json.get("text2")
@@ -36,7 +37,7 @@ class getsimilarity(Resource):
 
 @nscoreapi.route('/sentiment', methods = ['POST'])
 class getsentiment(Resource):
-    @nscoreapi.doc(params={'payload': 'text for validating sentiment'})
+    #@nscoreapi.doc(params={'payload': 'text for validating sentiment'})
     def post(self):
         payload = request.json.get("payload")
         response = paralleldots.sentiment(payload)
@@ -46,7 +47,7 @@ class getsentiment(Resource):
 
 @nscoreapi.route('/abusescore', methods = ['POST'])
 class getabusescore(Resource):
-    @nscoreapi.doc(params={'payload': 'text for validating abuse'})
+    #@nscoreapi.doc(params={'payload': 'text for validating abuse'})
     def post(self):
         payload = request.json.get("payload")
         response = paralleldots.abuse(payload)
@@ -56,7 +57,7 @@ class getabusescore(Resource):
 
 @nscoreapi.route('/emotionscore', methods = ['POST'])
 class getemotion(Resource):
-    @nscoreapi.doc(params={'payload': 'text for validating emotion'})
+    #@nscoreapi.doc(params={'payload': 'text for validating emotion'})
     def post(self):
         payload = request.json.get("payload")
         response = paralleldots.emotion(payload)
@@ -67,11 +68,14 @@ class getemotion(Resource):
 # payload will have path of image
 @nscoreapi.route('/popularityscore', methods = ['POST'])
 class getpopularity(Resource):
-    @nscoreapi.doc(params={'payload': 'path for url'})
+    #@nscoreapi.doc(params={'payload': 'path for url'})
     def post(self):
-        #payload = request.json.get("payload")
-        payload = "app/data/gangnam-style-viral-campaign.jpg"
-        response = paralleldots.popularity(os.path.abspath(payload))
+        imgurl = request.json.get("payload")
+        payload = downloader(imgurl)
+        fullimagepath = os.path.abspath(payload)
+        response = paralleldots.popularity(fullimagepath)
+        os.remove(fullimagepath)
+        print("deleting file", fullimagepath)
         response.pop("usage", None)
         print(response)
         return response
